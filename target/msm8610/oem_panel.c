@@ -46,6 +46,7 @@
 #include "include/panel_hx8389b_qhd_video.h"
 #include "include/panel_otm8018b_fwvga_video.h"
 #include "include/panel_nt35590_720p_video.h"
+#include "include/panel_tianma_tm040ydh65_ili9806c_wvga_video.h"
 
 /*---------------------------------------------------------------------------*/
 /* static panel selection variable                                           */
@@ -57,6 +58,7 @@ HX8379A_WVGA_VIDEO_PANEL,
 OTM8018B_FWVGA_VIDEO_PANEL,
 NT35590_720P_VIDEO_PANEL,
 HX8389B_QHD_VIDEO_PANEL,
+ILI9806C_WVGA_VIDEO_PANEL,
 };
 
 enum {
@@ -154,6 +156,26 @@ static bool init_panel_data(struct panel_struct *panelstruct,
 		memcpy(phy_db->timing,
 				hx8379a_wvga_video_timings, TIMING_SIZE);
 		break;
+	case ILI9806C_WVGA_VIDEO_PANEL:
+                panelstruct->paneldata    = &tianma_tm040ydh65_ili9806c_wvga_video_panel_data;
+                panelstruct->panelres     = &tianma_tm040ydh65_ili9806c_wvga_video_panel_res;
+                panelstruct->color        = &tianma_tm040ydh65_ili9806c_wvga_video_color;
+                panelstruct->videopanel   = &tianma_tm040ydh65_ili9806c_wvga_video_video_panel;
+                panelstruct->commandpanel = &tianma_tm040ydh65_ili9806c_wvga_video_command_panel;
+                panelstruct->state        = &tianma_tm040ydh65_ili9806c_wvga_video_state;
+                panelstruct->laneconfig   = &tianma_tm040ydh65_ili9806c_wvga_video_lane_config;
+                panelstruct->paneltiminginfo
+                                         = &tianma_tm040ydh65_ili9806c_wvga_video_timing_info;
+                panelstruct->panelresetseq
+                                         = &tianma_tm040ydh65_ili9806c_wvga_video_reset_seq;
+                panelstruct->backlightinfo = &tianma_tm040ydh65_ili9806c_wvga_video_backlight;
+                pinfo->mipi.panel_cmds
+                                        = tianma_tm040ydh65_ili9806c_wvga_video_on_command;
+                pinfo->mipi.num_of_panel_cmds
+                                        = TIANMA_TM040YDH65_ILI9806C_WVGA_VIDEO_ON_COMMAND;
+                memcpy(phy_db->timing,
+                                tianma_tm040ydh65_ili9806c_wvga_video_timings, TIMING_SIZE);
+                break;
 	case OTM8018B_FWVGA_VIDEO_PANEL:
 		panelstruct->paneldata    = &otm8018b_fwvga_video_panel_data;
 		panelstruct->panelres     = &otm8018b_fwvga_video_panel_res;
@@ -236,7 +258,8 @@ bool oem_panel_select(struct panel_struct *panelstruct,
 		switch (platform_subtype) {
 			case QRD_DEF:
 			case QRD_SKUAA:
-				panel_id = HX8379A_WVGA_VIDEO_PANEL;
+				/*panel_id = HX8379A_WVGA_VIDEO_PANEL;*/
+				panel_id = ILI9806C_WVGA_VIDEO_PANEL;
 				break;
 			case QRD_SKUAB:
 				if (target_id == 0x1)	// 1st HW version
