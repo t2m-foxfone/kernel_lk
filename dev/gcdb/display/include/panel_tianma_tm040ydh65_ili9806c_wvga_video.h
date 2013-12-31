@@ -54,7 +54,7 @@ static struct panel_config tianma_tm040ydh65_ili9806c_wvga_video_panel_data = {
 /* Panel resolution                                                          */
 /*---------------------------------------------------------------------------*/
 static struct panel_resolution tianma_tm040ydh65_ili9806c_wvga_video_panel_res = {
-  480, 854, 100, 100, 10, 0, 18, 20, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  480, 854, 100, 100, 10, 0, 20, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 /*---------------------------------------------------------------------------*/
@@ -72,14 +72,11 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd0[] = {
 0xFF, 0xFF, 0x98, 0x16,
  };
 
-
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd1[] = {
 0xBA, 0x60, 0x15, 0x80, };
 
-
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd2[] = {
 0xB0, 0x01, 0x15, 0x80, };
-
 
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd3[] = {
 0x13, 0x00, 0x39, 0xC0,
@@ -89,12 +86,12 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd3[] = {
 0x00, 0x01, 0x01, 0x16,
 0x00, 0xff, 0xf2, 0xff  };
 
-
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd4[] = {
 0x09, 0x00, 0x39, 0xC0,
 0xBD, 0x02, 0x13, 0x45,
 0x67, 0x45, 0x67, 0x01,
 0x23, 0xff, 0xff, 0xff  };
+
 
 
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd5[] = {
@@ -104,16 +101,13 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd5[] = {
 0xBB, 0xAA, 0x66, 0x77,
 0x22, 0x22, 0x22, 0x22,
 0x22, 0x22, 0xFF, 0xFF,  };
-
-
+				
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd6[] = {
 0x03, 0x00, 0x39, 0xC0,
 0xED, 0x7F, 0x0F, 0xFF, };
 
-
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd7[] = {
 0xF3, 0x70, 0x15, 0x80, };
-
 
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd8[] = {
 0xB4, 0x02, 0x15, 0x80, };
@@ -123,12 +117,10 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd9[] = {
 0x04, 0x00, 0x39, 0xC0,
 0xC0, 0x0F, 0x0B, 0x0A, };
 
-
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd10[] = {
 0x05, 0x00, 0x39, 0xC0,
 0xC1, 0x17, 0x88, 0x70,
 0x20, 0xFF, 0xFF, 0xFF, };
-
 
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd11[] = {
 0xD8, 0x50, 0x15, 0x80, };
@@ -141,11 +133,10 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd12[] = {
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd13[] = {
 0x11, 0x00, 0x39, 0xC0,
 0xE0, 0x00, 0x04, 0x12,
-0x13, 0x1E, 0xC8, 0X08,
-0x02, 0x09, 0x03, 0x0C,
+0x11, 0x13, 0x1e, 0Xc8,
+0x08, 0x02, 0x09, 0x03,
 0x0C, 0x0C, 0x2D, 0x2A,
 0x00, 0xFF, 0xFF, 0xFF, };
-
 
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd14[] = {
 0x11, 0x00, 0x39, 0xC0,
@@ -163,6 +154,13 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd15[] = {
 0x04, 0xff, 0xff, 0xff,  };
 
 
+#if 0
+static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd151[] = {
+0x05, 0x00, 0x39, 0xC0,
+0xb5, 0x12, 0x14, 0x04,
+0x00, 0xff, 0xff, 0xff,  };
+#endif
+
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd16[] = {
 0xf7, 0x89, 0x15, 0x80, };
 
@@ -176,10 +174,10 @@ static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd18[] = {
 
 static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd19[] = {
 0x29, 0x00, 0x05, 0x80 };
-
-
-
-
+#if 0
+static char tianma_tm040ydh65_ili9806c_wvga_video_on_cmd20[] = {
+0x36, 0x08, 0x15, 0x80 };
+#endif
 static struct mipi_dsi_cmd tianma_tm040ydh65_ili9806c_wvga_video_on_command[] = {
 { 0x8 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd0},
 { 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd1},
@@ -197,10 +195,12 @@ static struct mipi_dsi_cmd tianma_tm040ydh65_ili9806c_wvga_video_on_command[] = 
 { 0x18 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd13},
 { 0x18 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd14},
 { 0x10 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd15},
+//{ 0x0c,  tianma_tm040ydh65_ili9806c_wvga_video_on_cmd151},
 { 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd16},
 { 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd17},
-{ 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd18},
-{ 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd19},
+{ 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd18,78},
+{ 0x4 , tianma_tm040ydh65_ili9806c_wvga_video_on_cmd19,32},
+//{ 0x4,  tianma_tm040ydh65_ili9806c_wvga_video_on_cmd20,}
 };
 #define TIANMA_TM040YDH65_ILI9806C_WVGA_VIDEO_ON_COMMAND 20
 
