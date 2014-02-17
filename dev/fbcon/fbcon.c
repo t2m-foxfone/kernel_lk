@@ -32,7 +32,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <dev/fbcon.h>
-#include <splash.h>
+#include <t2mlogo.h>
 #include <platform.h>
 #include <string.h>
 
@@ -119,10 +119,14 @@ static void fbcon_scroll_up(void)
 /* TODO: take stride into account */
 void fbcon_clear(void)
 {
-	unsigned count = config->width * config->height;
-	memset(config->base, BGCOLOR, count * ((config->bpp) / 8));
-}
+        unsigned count = config->width * config->height;
+        char bg[3] = {0xc7, 0x79, 0x00};
+        unsigned int  i = 0;
+        unsigned int pix = ((config->bpp) / 8);
 
+        for(;i < count*3 ; i += 3 )
+                memcpy(config->base + i, bg, pix);
+}
 
 static void fbcon_set_colors(unsigned bg, unsigned fg)
 {
