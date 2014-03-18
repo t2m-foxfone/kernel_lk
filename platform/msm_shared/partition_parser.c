@@ -661,12 +661,18 @@ static unsigned int write_gpt(uint32_t size, uint8_t *gptImage, uint32_t block_s
 	patch_gpt(gptImage, device_density, partition_entry_array_size,
 		  max_partition_count, partition_entry_size, block_size);
 
+	/* Do not erase whole eMMC card when "fastboot flash partition gpt_both0.bin",
+	   in case that we want to keep data in a specific partition but change the
+	   partition table.                by jinzhang@t2mobile.com,  2014/3/18
+	*/
+#if 0
 	/* Erasing the eMMC card before writing */
 	ret = mmc_erase_card(0x00000000, device_density);
 	if (ret) {
 		dprintf(CRITICAL, "Failed to erase the eMMC card\n");
 		goto end;
 	}
+#endif	
 
 	/* Writing protective MBR */
 	ret = mmc_write(0, block_size, (unsigned int *)gptImage);
