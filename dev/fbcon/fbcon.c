@@ -1,4 +1,5 @@
 /*
+
  * Copyright (c) 2008, Google Inc.
  * All rights reserved.
  *
@@ -32,7 +33,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <dev/fbcon.h>
-#include <t2mlogo.h>
+#include <splash_black.h>
 #include <platform.h>
 #include <string.h>
 
@@ -120,7 +121,7 @@ static void fbcon_scroll_up(void)
 void fbcon_clear(void)
 {
         unsigned count = config->width * config->height;
-        char bg[3] = {0xc7, 0x79, 0x00};
+        char bg[3] = {0x00, 0x00, 0x00};
         unsigned int  i = 0;
         unsigned int pix = ((config->bpp) / 8);
 
