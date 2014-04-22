@@ -289,7 +289,8 @@ int msm_display_init(struct msm_fb_panel_data *pdata)
 		ret = pdata->post_power_func(1);
 	if (ret)
 		goto msm_display_init_out;
-
+	
+	mdelay(70);
 	/* Turn on backlight */
 	if (pdata->bl_func)
 		ret = pdata->bl_func(1);
