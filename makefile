@@ -48,6 +48,9 @@ ifeq ($(ENABLE_TRUSTZONE),1)
 endif
 
 INCLUDES := -I$(BUILDDIR) -Iinclude
+ifdef VERSIONINC
+INCLUDES += -I$(VERSIONINC)
+endif
 CFLAGS := -O2 -g -fno-builtin -finline -W -Wall -Wno-multichar -Wno-unused-parameter -Wno-unused-function -include $(CONFIGHEADER)
 #CFLAGS += -Werror
 ifeq ($(EMMC_BOOT),1)
