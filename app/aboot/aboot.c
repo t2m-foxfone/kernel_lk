@@ -2281,7 +2281,8 @@ void aboot_init(const struct app_descriptor *app)
 		dprintf(CRITICAL, "ERROR: Could not do normal boot. Reverting "
 			"to fastboot mode.\n");
 	}
-
+	
+	display_fastboot_image_on_screen();
 	/* We are here means regular boot did not happen. Start fastboot. */
 
 	/* register aboot specific fastboot commands */

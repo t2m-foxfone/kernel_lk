@@ -212,6 +212,18 @@ struct fbcon_config* fbcon_display(void)
 extern struct fbimage* fetch_image_from_partition();
 void fbcon_putImage(struct fbimage *fbimg, bool flag);
 
+void display_fastboot_image_on_screen()
+{
+        struct fbimage default_fbimg, *fbimg;
+
+        fbcon_clear();
+        fbimg = &default_fbimg;
+        fbimg->header.width = SPLASH_BOOT_IMAGE_WIDTH;
+        fbimg->header.height = SPLASH_BOOT_IMAGE_HEIGHT;
+        fbimg->image = (unsigned char *)fastboot_logo;
+        fbcon_putImage(fbimg, false);
+}
+
 void display_image_on_screen()
 {
 	struct fbimage default_fbimg, *fbimg;
