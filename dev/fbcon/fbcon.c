@@ -33,7 +33,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <dev/fbcon.h>
-#include <splash_black.h>
+#include <tslogo.h>
 #include <platform.h>
 #include <string.h>
 
