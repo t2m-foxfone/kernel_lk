@@ -1287,7 +1287,7 @@ void read_device_info_mmc(device_info *dev)
 		memcpy(info->magic, DEVICE_MAGIC, DEVICE_MAGIC_SIZE);
 		info->is_unlocked = 0;
 		info->is_tampered = 0;
-		info->charger_screen_enabled = 1;
+		info->charger_screen_enabled = 0;
 		info->mem_capacity = DEVICE_MEM_AUTO;
 
 		write_device_info_mmc(info);
