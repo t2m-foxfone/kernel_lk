@@ -237,7 +237,7 @@ unsigned char *update_cmdline(const char * cmdline)
 		cmdline_len += strlen(ffbm_mode_string);
 		/* reduce kernel console messages to speed-up boot */
 		cmdline_len += strlen(loglevel);
-	} else if (device.charger_screen_enabled && target_pause_for_battery_charge()) {
+	} else if (target_pause_for_battery_charge()) {
 		pause_at_bootup = 1;
 		cmdline_len += strlen(battchg_pause);
 	}
