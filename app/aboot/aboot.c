@@ -237,7 +237,7 @@ unsigned char *update_cmdline(const char * cmdline)
 		cmdline_len += strlen(ffbm_mode_string);
 		/* reduce kernel console messages to speed-up boot */
 		cmdline_len += strlen(loglevel);
-	} else if (target_pause_for_battery_charge()) {
+	} else if (device.charger_screen_enabled && target_pause_for_battery_charge()) {
 		pause_at_bootup = 1;
 		cmdline_len += strlen(battchg_pause);
 	}
@@ -1287,7 +1287,7 @@ void read_device_info_mmc(device_info *dev)
 		memcpy(info->magic, DEVICE_MAGIC, DEVICE_MAGIC_SIZE);
 		info->is_unlocked = 0;
 		info->is_tampered = 0;
-		info->charger_screen_enabled = 0;
+		info->charger_screen_enabled = 1;
 		info->mem_capacity = DEVICE_MEM_AUTO;
 
 		write_device_info_mmc(info);
