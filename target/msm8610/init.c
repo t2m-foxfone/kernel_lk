@@ -389,6 +389,14 @@ unsigned target_pause_for_battery_charge(void)
 	else
 			return 0;
 }
+/**
+*Bug#: 636472
+*read boot command from misc
+*/
+int emmc_recovery_init(void)
+{
+    return _emmc_recovery_init();
+}
 
 void target_usb_stop(void)
 {
