@@ -69,6 +69,10 @@
 #include "board.h"
 
 #include "scm.h"
+/*czb@tcl.com add bootloader version info*/
+#define JRD_VERSION
+#include "version.inc"
+/*czb@tcl.com add bootloader version info*/
 
 extern  bool target_use_signed_kernel(void);
 extern void platform_uninit(void);
@@ -120,6 +124,8 @@ static const char *baseband_dsda    = " androidboot.baseband=dsda";
 static const char *baseband_dsda2   = " androidboot.baseband=dsda2";
 static const char *baseband_sglte2  = " androidboot.baseband=sglte2";
 
+static const char *device_bootram = " mem=";  // for mem adjustment
+
 static unsigned page_size = 0;
 static unsigned page_mask = 0;
 static char ffbm_mode_string[FFBM_MODE_BUF_SIZE];
@@ -128,7 +134,7 @@ static bool boot_into_ffbm;
 /* Assuming unauthorized kernel image by default */
 static int auth_kernel_img = 0;
 
-static device_info device = {DEVICE_MAGIC, 0, 0, 0};
+static device_info device = {DEVICE_MAGIC, 0, 0, 0, DEVICE_MEM_AUTO};
 
 struct atag_ptbl_entry
 {
@@ -165,6 +171,7 @@ char max_download_size[MAX_RSP_SIZE];
 char charger_screen_enabled[MAX_RSP_SIZE];
 char sn_buf[13];
 char display_panel_buf[MAX_PANEL_BUF_SIZE];
+char device_meminfo[MAX_RSP_SIZE];
 
 extern int emmc_recovery_init(void);
 
@@ -202,11 +209,23 @@ unsigned char *update_cmdline(const char * cmdline)
 	unsigned char *cmdline_final = NULL;
 	int pause_at_bootup = 0;
 	bool gpt_exists = partition_gpt_exists();
+/*czb@tcl.com add bootloader version info. start*/
+#ifdef JRD_VERSION
+	char appsboot_version_cmdline[40];
+#endif
+/*czb@tcl.com add bootloader version info. end*/
 
 	if (cmdline && cmdline[0]) {
 		cmdline_len = strlen(cmdline);
 		have_cmdline = 1;
 	}
+
+/*czb@tcl.com add bootloader version info. start*/
+#ifdef JRD_VERSION
+	sprintf(appsboot_version_cmdline, " androidboot.bootloader=%s",APPSBOOT_VER);
+	cmdline_len += strlen(appsboot_version_cmdline);
+#endif
+/*czb@tcl.com add bootloader version info. end*/
 	if (target_is_emmc_boot()) {
 		cmdline_len += strlen(emmc_cmdline);
 	}
@@ -222,8 +241,7 @@ unsigned char *update_cmdline(const char * cmdline)
 		cmdline_len += strlen(ffbm_mode_string);
 		/* reduce kernel console messages to speed-up boot */
 		cmdline_len += strlen(loglevel);
-	} else if (device.charger_screen_enabled &&
-			target_pause_for_battery_charge()) {
+	} else if (device.charger_screen_enabled && target_pause_for_battery_charge()) {
 		pause_at_bootup = 1;
 		cmdline_len += strlen(battchg_pause);
 	}
@@ -279,6 +297,13 @@ unsigned char *update_cmdline(const char * cmdline)
 		cmdline_len += strlen(display_panel_buf);
 	}
 
+	/* add cmdline " mem=[256-1024]m to manully set device ram*/
+	if (device.mem_capacity != DEVICE_MEM_AUTO) {
+		cmdline_len += strlen(device_bootram);
+		snprintf(device_meminfo, MAX_RSP_SIZE, "%dm", device.mem_capacity);
+		cmdline_len += strlen(device_meminfo);
+	}
+
 	if (cmdline_len > 0) {
 		const char *src;
 		unsigned char *dst = (unsigned char*) malloc((cmdline_len + 4) & (~3));
@@ -290,6 +315,14 @@ unsigned char *update_cmdline(const char * cmdline)
 			src = cmdline;
 			while ((*dst++ = *src++));
 		}
+/*czb@tcl.com add bootloader version info. start*/
+#ifdef JRD_VERSION
+		src = appsboot_version_cmdline;
+		if(have_cmdline) --dst;
+		have_cmdline = 1;
+		while ((*dst++ = *src++));
+#endif
+/*czb@tcl.com add bootloader version info. end*/
 		if (target_is_emmc_boot()) {
 			src = emmc_cmdline;
 			if (have_cmdline) --dst;
@@ -396,6 +429,15 @@ unsigned char *update_cmdline(const char * cmdline)
 			if (have_cmdline) --dst;
 			while ((*dst++ = *src++));
 			src = display_panel_buf;
+			if (have_cmdline) --dst;
+			while ((*dst++ = *src++));
+		}
+
+		if (device.mem_capacity != DEVICE_MEM_AUTO) {
+			src = device_bootram;
+			if (have_cmdline) --dst;
+			while ((*dst++ = *src++));
+			src = device_meminfo;
 			if (have_cmdline) --dst;
 			while ((*dst++ = *src++));
 		}
@@ -1268,7 +1310,8 @@ void read_device_info_mmc(device_info *dev)
 		memcpy(info->magic, DEVICE_MAGIC, DEVICE_MAGIC_SIZE);
 		info->is_unlocked = 0;
 		info->is_tampered = 0;
-		info->charger_screen_enabled = 0;
+		info->charger_screen_enabled = 1;
+		info->mem_capacity = DEVICE_MEM_AUTO;
 
 		write_device_info_mmc(info);
 	}
@@ -1991,6 +2034,51 @@ void cmd_preflash(const char *arg, void *data, unsigned sz)
 	fastboot_okay("");
 }
 
+
+int get_mem_capacity(const char *cmd)
+{
+	char response[64];
+
+	/* verify mem capacity from fastboot cmd */
+	if (cmd && cmd[0]==' ') {
+		int capcity = atoi(cmd + 1);
+
+		snprintf(response, sizeof(response), "\tcapcity:%d", capcity);
+		fastboot_info(response);
+		if (capcity == 0) {
+			return DEVICE_MEM_AUTO;
+		} else if (capcity >= DEVICE_MEM_MIN 
+			  && capcity <= DEVICE_MEM_MAX) {
+			return capcity;
+		}
+	}
+
+	fastboot_info("\tUsage: fastboot oem mem capacity");
+	fastboot_info("\tcapcity should between 256 and 1024, 0 for auto detection");
+	return -1;
+}
+
+void cmd_oem_mem(const char *arg, void *data, unsigned sz)
+{
+	char response[64];
+
+	int mem_capacity = get_mem_capacity(arg);
+	if (mem_capacity == -1) 
+		return;
+	device.mem_capacity = (unsigned short)mem_capacity;
+	write_device_info(&device);
+
+	if (device.mem_capacity == DEVICE_MEM_AUTO) {
+		snprintf(device_meminfo, MAX_RSP_SIZE, "auto");
+	} else {
+		snprintf(device_meminfo, MAX_RSP_SIZE, "%dm", device.mem_capacity);
+	}
+
+	snprintf(response, sizeof(response), "\tDevice adjusted mem: %s", device_meminfo);
+	fastboot_info(response);
+	fastboot_okay("");
+}
+
 static struct fbimage logo_header = {0};
 struct fbimage* splash_screen_flash();
 
@@ -2195,6 +2283,15 @@ void aboot_fastboot_register_commands(void)
 			cmd_oem_enable_charger_screen);
 	fastboot_register("oem disable-charger-screen",
 			cmd_oem_disable_charger_screen);
+
+	/*
+	 * register a new command, "fastboot oem mem [0|256-1024]"
+	 * to add cmdline " mem=[256-1024]m" to kernel bootargs.
+	 * 0 for mem auto detection and no cmdline added
+	 *                   by jinzhang@t2mobile.com  2014/03/21
+	 */
+	 
+	fastboot_register("oem mem", cmd_oem_mem);
 	/* publish variables and their values */
 	fastboot_publish("product",  TARGET(BOARD));
 	fastboot_publish("kernel",   "lk");
@@ -2218,6 +2315,14 @@ void aboot_fastboot_register_commands(void)
 			device.charger_screen_enabled);
 	fastboot_publish("charger-screen-enabled",
 			(const char *) charger_screen_enabled);
+	
+	/* publish for "fastboot getvar mem" */
+	if (device.mem_capacity == DEVICE_MEM_AUTO) {
+		snprintf(device_meminfo, MAX_RSP_SIZE, "auto");
+	} else {
+		snprintf(device_meminfo, MAX_RSP_SIZE, "%dm", device.mem_capacity);
+	}
+	fastboot_publish("mem", (const char *) device_meminfo);
 }
 
 void aboot_init(const struct app_descriptor *app)
@@ -2313,7 +2418,8 @@ void aboot_init(const struct app_descriptor *app)
 		dprintf(CRITICAL, "ERROR: Could not do normal boot. Reverting "
 			"to fastboot mode.\n");
 	}
-
+	
+	display_fastboot_image_on_screen();
 	/* We are here means regular boot did not happen. Start fastboot. */
 
 	/* register aboot specific fastboot commands */
