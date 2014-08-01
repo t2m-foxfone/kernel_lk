@@ -32,7 +32,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <dev/fbcon.h>
-#include <splash.h>
+#include <tslogo.h>
 #include <platform.h>
 #include <string.h>
 
