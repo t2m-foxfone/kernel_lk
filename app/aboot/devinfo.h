@@ -35,12 +35,18 @@ typedef struct device_info device_info;
 #define DEVICE_MAGIC "ANDROID-BOOT!"
 #define DEVICE_MAGIC_SIZE 13
 
+#define DEVICE_MEM_AUTO	  0
+#define DEVICE_MEM_MIN	  256
+#define DEVICE_MEM_MAX    1024
+
+ 
 struct device_info
 {
 	unsigned char magic[DEVICE_MAGIC_SIZE];
 	bool is_unlocked;
 	bool is_tampered;
 	bool charger_screen_enabled;
+	unsigned short mem_capacity;   // ram adjustment by jinzhang@t2mobile.com
 };
 
 #endif
